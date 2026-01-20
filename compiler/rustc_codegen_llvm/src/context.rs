@@ -216,6 +216,12 @@ pub(crate) unsafe fn create_module<'ll>(
             target_data_layout = target_data_layout.replace("-f64:32:64", "");
         }
     }
+    if llvm_version < (23, 0, 0) {
+        if sess.target.arch == Arch::S390x {
+            // LLVM 23 updated the default layout on s390x: https://github.com/llvm/llvm-project/pull/176041
+            target_data_layout = target_data_layout.replace("E-S64-m:", "E-m:");
+        }
+    }
 
     // Ensure the data-layout values hardcoded remain the defaults.
     {
